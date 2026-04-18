@@ -83,22 +83,26 @@ fetch("leaderboard.json")
   .then(r => r.json())
   .then(players => {
     const tbody = document.querySelector("#board tbody");
-    players.sort((a, b) => b.elo - a.elo);
+
+    // Sort by overall rating
+    players.sort((a, b) => b.overall - a.overall);
 
     players.forEach((p, i) => {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td class="rank">${i + 1}</td>
-        <td>${p.name}</td>
-        <td class="elo">${p.elo}</td>
+        <td>${p.username}</td>
+        <td class="elo">${p.overall}</td>
         <td>${p.wins}</td>
         <td>${p.losses}</td>
       `;
       tbody.appendChild(row);
     });
+  })
+  .catch(err => {
+    console.error("Error loading leaderboard.json:", err);
   });
 </script>
 
 </body>
 </html>
-
