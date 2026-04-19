@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Elite Tiers</title>
+  <title>SkunkWorld Leaderboard</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0f; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
@@ -133,18 +133,18 @@
     if (elo >= 1400) return { name: 'GT1', class: 'gt1' };
     if (elo >= 1300) return { name: 'HT5', class: 'ht5' };
     if (elo >= 1200) return { name: 'HT4', class: 'ht4' };
-    if (elo >= 1100) return { name: 'HT3', class: 'ht3' };
-    if (elo >= 1050) return { name: 'HT2', class: 'ht2' };
-    if (elo >= 1000) return { name: 'HT1', class: 'ht1' };
-    if (elo >= 950) return { name: 'MT5', class: 'mt5' };
-    if (elo >= 900) return { name: 'MT4', class: 'mt4' };
-    if (elo >= 850) return { name: 'MT3', class: 'mt3' };
-    if (elo >= 800) return { name: 'MT2', class: 'mt2' };
-    if (elo >= 750) return { name: 'MT1', class: 'mt1' };
-    if (elo >= 700) return { name: 'LT5', class: 'lt5' };
-    if (elo >= 650) return { name: 'LT4', class: 'lt4' };
-    if (elo >= 600) return { name: 'LT3', class: 'lt3' };
-    if (elo >= 550) return { name: 'LT2', class: 'lt2' };
+    if (elo >= 1150) return { name: 'HT3', class: 'ht3' };
+    if (elo >= 1100) return { name: 'HT2', class: 'ht2' };
+    if (elo >= 1050) return { name: 'HT1', class: 'ht1' };
+    if (elo >= 1025) return { name: 'MT5', class: 'mt5' };
+    if (elo >= 1010) return { name: 'MT4', class: 'mt4' };
+    if (elo >= 1005) return { name: 'MT3', class: 'mt3' };
+    if (elo >= 1001) return { name: 'MT2', class: 'mt2' };
+    if (elo >= 1000) return { name: 'MT1', class: 'mt1' };
+    if (elo >= 975) return { name: 'LT5', class: 'lt5' };
+    if (elo >= 950) return { name: 'LT4', class: 'lt4' };
+    if (elo >= 925) return { name: 'LT3', class: 'lt3' };
+    if (elo >= 900) return { name: 'LT2', class: 'lt2' };
     return { name: 'LT1', class: 'lt1' };
   }
 
@@ -165,7 +165,7 @@
       return `<div class="lb-row ${rowClass(i)}">
         <div class="rank ${rankClass(i)}">${i+1}</div>
         <div class="player">
-          <div class="avatar"><img src="https://mc-heads.net/avatar/${p.uuid}/34" alt="${p.username}" onerror="this.parentElement.innerHTML='${p.username.slice(0,2).toUpperCase()}'"></div>
+          <div class="avatar"><img src="https://mc-heads.net/avatar/${p.username}/34" alt="${p.username}" onerror="this.parentElement.innerHTML='${p.username.slice(0,2).toUpperCase()}'"></div>
           <div class="player-name">${p.username}${p.verified?'<span class="verified"></span>':''}</div>
         </div>
         <div class="elo">${kit.elo}</div>
