@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SkunkWorld Leaderboard</title>
+  <title>Elite Tiers</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0f; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
@@ -18,8 +18,8 @@
     .kit-tab { background: #1a1a26; border: 1px solid #2a2a3a; color: #aaa; font-size: 12px; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
     .kit-tab.active { background: #5b8af5; border-color: #5b8af5; color: #fff; }
     .leaderboard-wrap { max-width: 780px; margin: 0 auto; padding: 0 1rem 3rem; }
-    .lb-header { display: grid; grid-template-columns: 48px 1fr 100px 80px 80px 90px; gap: 8px; padding: 8px 16px; font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
-    .lb-row { display: grid; grid-template-columns: 48px 1fr 100px 80px 80px 90px; gap: 8px; align-items: center; background: #111118; border: 1px solid #1e1e2e; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
+    .lb-header { display: grid; grid-template-columns: 48px 1fr 100px 70px 80px 80px 90px; gap: 8px; padding: 8px 16px; font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+    .lb-row { display: grid; grid-template-columns: 48px 1fr 100px 70px 80px 80px 90px; gap: 8px; align-items: center; background: #111118; border: 1px solid #1e1e2e; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
     .lb-row.gold { border-color: #c9a227; background: #15130a; }
     .lb-row.silver { border-color: #8a8a9a; }
     .lb-row.bronze { border-color: #8b5e3c; background: #130f0a; }
@@ -28,13 +28,35 @@
     .rank.r2 { color: #b0b0c0; }
     .rank.r3 { color: #c87941; }
     .player { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 34px; height: 34px; border-radius: 6px; background: #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5b8af5; flex-shrink: 0; }
+    .avatar { width: 34px; height: 34px; border-radius: 6px; background: #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5b8af5; flex-shrink: 0; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; image-rendering: pixelated; }
     .player-name { font-size: 14px; font-weight: 600; color: #e8e8e8; }
     .verified { display: inline-block; width: 10px; height: 10px; background: #5b8af5; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
     .elo { font-size: 15px; font-weight: 700; color: #5b8af5; text-align: right; }
     .stat { font-size: 13px; color: #888; text-align: right; }
     .wl { font-size: 13px; color: #5cb87a; text-align: right; }
     .streak { font-size: 13px; color: #f5a742; text-align: right; }
+    .tier { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-align: center; letter-spacing: 0.5px; }
+    .tier.gt5 { background: #f5c542; color: #1a1a0a; }
+    .tier.gt4 { background: #d4a82e; color: #1a1a0a; }
+    .tier.gt3 { background: #b38a1e; color: #1a1a0a; }
+    .tier.gt2 { background: #916d12; color: #fff; }
+    .tier.gt1 { background: #6f5008; color: #fff; }
+    .tier.ht5 { background: #b0b0c0; color: #1a1a0a; }
+    .tier.ht4 { background: #909099; color: #1a1a0a; }
+    .tier.ht3 { background: #707077; color: #fff; }
+    .tier.ht2 { background: #505055; color: #fff; }
+    .tier.ht1 { background: #303033; color: #fff; }
+    .tier.mt5 { background: #c87941; color: #1a1a0a; }
+    .tier.mt4 { background: #a86334; color: #1a1a0a; }
+    .tier.mt3 { background: #884d28; color: #fff; }
+    .tier.mt2 { background: #68371c; color: #fff; }
+    .tier.mt1 { background: #482110; color: #fff; }
+    .tier.lt5 { background: #5cb87a; color: #1a1a0a; }
+    .tier.lt4 { background: #4a9662; color: #1a1a0a; }
+    .tier.lt3 { background: #38744a; color: #fff; }
+    .tier.lt2 { background: #265232; color: #fff; }
+    .tier.lt1 { background: #14301a; color: #fff; }
     .loading { text-align: center; color: #888; padding: 3rem; }
     .error { text-align: center; color: #f5a742; padding: 3rem; background: #1a1410; border-radius: 10px; margin: 1rem; }
   </style>
@@ -57,6 +79,7 @@
     <div>#</div>
     <div>Player</div>
     <div style="text-align:right">Elo</div>
+    <div style="text-align:center">Tier</div>
     <div style="text-align:right">W/L</div>
     <div style="text-align:right">Win %</div>
     <div style="text-align:right">Streak</div>
@@ -102,6 +125,29 @@
     renderRows();
   }
 
+  function getTier(elo) {
+    if (elo >= 1800) return { name: 'GT5', class: 'gt5' };
+    if (elo >= 1700) return { name: 'GT4', class: 'gt4' };
+    if (elo >= 1600) return { name: 'GT3', class: 'gt3' };
+    if (elo >= 1500) return { name: 'GT2', class: 'gt2' };
+    if (elo >= 1400) return { name: 'GT1', class: 'gt1' };
+    if (elo >= 1300) return { name: 'HT5', class: 'ht5' };
+    if (elo >= 1200) return { name: 'HT4', class: 'ht4' };
+    if (elo >= 1100) return { name: 'HT3', class: 'ht3' };
+    if (elo >= 1050) return { name: 'HT2', class: 'ht2' };
+    if (elo >= 1000) return { name: 'HT1', class: 'ht1' };
+    if (elo >= 950) return { name: 'MT5', class: 'mt5' };
+    if (elo >= 900) return { name: 'MT4', class: 'mt4' };
+    if (elo >= 850) return { name: 'MT3', class: 'mt3' };
+    if (elo >= 800) return { name: 'MT2', class: 'mt2' };
+    if (elo >= 750) return { name: 'MT1', class: 'mt1' };
+    if (elo >= 700) return { name: 'LT5', class: 'lt5' };
+    if (elo >= 650) return { name: 'LT4', class: 'lt4' };
+    if (elo >= 600) return { name: 'LT3', class: 'lt3' };
+    if (elo >= 550) return { name: 'LT2', class: 'lt2' };
+    return { name: 'LT1', class: 'lt1' };
+  }
+
   function renderRows() {
     if (!data) return;
     
@@ -115,14 +161,15 @@
     document.getElementById('rows').innerHTML = players.map((p,i) => {
       const kit = p.kits[activeKit];
       const winPct = kit.wins + kit.losses > 0 ? ((kit.wins/(kit.wins+kit.losses))*100).toFixed(1) : '0.0';
-      const initials = p.username.slice(0,2).toUpperCase();
+      const tier = getTier(kit.elo);
       return `<div class="lb-row ${rowClass(i)}">
         <div class="rank ${rankClass(i)}">${i+1}</div>
         <div class="player">
-          <div class="avatar">${initials}</div>
+          <div class="avatar"><img src="https://mc-heads.net/avatar/${p.uuid}/34" alt="${p.username}" onerror="this.parentElement.innerHTML='${p.username.slice(0,2).toUpperCase()}'"></div>
           <div class="player-name">${p.username}${p.verified?'<span class="verified"></span>':''}</div>
         </div>
         <div class="elo">${kit.elo}</div>
+        <div style="text-align:center"><span class="tier ${tier.class}">${tier.name}</span></div>
         <div class="stat">${kit.wins} / ${kit.losses}</div>
         <div class="wl">${winPct}%</div>
         <div class="streak">${kit.winstreak} WS</div>
