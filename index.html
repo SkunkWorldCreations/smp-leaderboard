@@ -1,188 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SMP PvP Ranked Leaderboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0d1117;
-    color: #e6edf3;
-  }
-  header {
-    padding: 25px;
-    text-align: center;
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-  }
-  h1 {
-    margin: 0;
-    font-size: 2rem;
-  }
-  .tabs {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px;
-  }
-  .tab {
-    padding: 10px 18px;
-    background: #21262d;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .tab.active {
-    background: #30363d;
-  }
-  main {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 15px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #30363d;
-  }
-  th {
-    background: #21262d;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-  }
-  tr:hover {
-    background: #1c2128;
-  }
-  .rank {
-    color: #8b949e;
-  }
-  .elo {
-    font-weight: bold;
-    color: #f1c40f;
-  }
-  .tier {
-    font-size: 0.8rem;
-    color: #58a6ff;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkunkWorld Leaderboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0a0f; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+    .navbar { background: #111118; border-bottom: 1px solid #2a2a3a; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .navbar .brand { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+    .navbar .brand span { color: #5b8af5; }
+    .hero { text-align: center; padding: 3rem 1rem 2rem; }
+    .hero h1 { font-size: 32px; font-weight: 800; color: #fff; }
+    .hero h1 span { color: #5b8af5; }
+    .hero p { color: #888; font-size: 14px; margin-top: 0.5rem; }
+    .kit-tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 0 1rem 1.5rem; }
+    .kit-tab { background: #1a1a26; border: 1px solid #2a2a3a; color: #aaa; font-size: 12px; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+    .kit-tab.active { background: #5b8af5; border-color: #5b8af5; color: #fff; }
+    .leaderboard-wrap { max-width: 780px; margin: 0 auto; padding: 0 1rem 3rem; }
+    .lb-header { display: grid; grid-template-columns: 48px 1fr 100px 80px 80px 90px; gap: 8px; padding: 8px 16px; font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+    .lb-row { display: grid; grid-template-columns: 48px 1fr 100px 80px 80px 90px; gap: 8px; align-items: center; background: #111118; border: 1px solid #1e1e2e; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
+    .lb-row.gold { border-color: #c9a227; background: #15130a; }
+    .lb-row.silver { border-color: #8a8a9a; }
+    .lb-row.bronze { border-color: #8b5e3c; background: #130f0a; }
+    .rank { font-size: 15px; font-weight: 700; text-align: center; color: #555; }
+    .rank.r1 { color: #f5c542; }
+    .rank.r2 { color: #b0b0c0; }
+    .rank.r3 { color: #c87941; }
+    .player { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 34px; height: 34px; border-radius: 6px; background: #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5b8af5; flex-shrink: 0; }
+    .player-name { font-size: 14px; font-weight: 600; color: #e8e8e8; }
+    .verified { display: inline-block; width: 10px; height: 10px; background: #5b8af5; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+    .elo { font-size: 15px; font-weight: 700; color: #5b8af5; text-align: right; }
+    .stat { font-size: 13px; color: #888; text-align: right; }
+    .wl { font-size: 13px; color: #5cb87a; text-align: right; }
+    .streak { font-size: 13px; color: #f5a742; text-align: right; }
+    .loading { text-align: center; color: #888; padding: 3rem; }
+    .error { text-align: center; color: #f5a742; padding: 3rem; background: #1a1410; border-radius: 10px; margin: 1rem; }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>SMP PvP Ranked Leaderboard</h1>
-</header>
+<div class="navbar">
+  <div class="brand">Skunk<span>World</span></div>
+</div>
 
-<div class="tabs" id="tabs"></div>
+<div class="hero">
+  <h1>PvP <span>Leaderboard</span></h1>
+  <p>Ranked matchmaking stats — SmpPvpRanked.minekeep.gg</p>
+</div>
 
-<main>
-  <table id="board">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Player</th>
-        <th>ELO</th>
-        <th>Wins</th>
-        <th>Losses</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</main>
+<div class="kit-tabs" id="kitTabs"></div>
+
+<div class="leaderboard-wrap">
+  <div class="lb-header">
+    <div>#</div>
+    <div>Player</div>
+    <div style="text-align:right">Elo</div>
+    <div style="text-align:right">W/L</div>
+    <div style="text-align:right">Win %</div>
+    <div style="text-align:right">Streak</div>
+  </div>
+  <div id="rows"><div class="loading">Loading leaderboard...</div></div>
+</div>
 
 <script>
-const tiers = [
-  { min: 1850, name: "GT1" },
-  { min: 1800, name: "GT2" },
-  { min: 1750, name: "GT3" },
-  { min: 1700, name: "GT4" },
-  { min: 1650, name: "GT5" },
-  { min: 1600, name: "HT1" },
-  { min: 1550, name: "HT2" },
-  { min: 1500, name: "HT3" },
-  { min: 1450, name: "HT4" },
-  { min: 1400, name: "HT5" },
-  { min: 1350, name: "MT1" },
-  { min: 1300, name: "MT2" },
-  { min: 1250, name: "MT3" },
-  { min: 1200, name: "MT4" },
-  { min: 1150, name: "MT5" },
-  { min: 1100, name: "LT1" },
-  { min: 1050, name: "LT2" },
-  { min: 1000, name: "LT3" },
-  { min: 950, name: "LT4" },
-  { min: 0, name: "LT5" }
-];
+  let data = null;
+  let activeKit = null;
 
-function getTier(elo) {
-  return tiers.find(t => elo >= t.min).name;
-}
+  async function loadData() {
+    try {
+      const timestamp = new Date().getTime();
+      const res = await fetch(`leaderboard.json?t=${timestamp}`);
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      data = await res.json();
+      console.log('Data loaded:', data);
+      
+      const kits = new Set();
+      data.leaderboard.forEach(p => Object.keys(p.kits).forEach(k => kits.add(k)));
+      activeKit = [...kits][0];
+      renderTabs([...kits]);
+      renderRows();
+    } catch (err) {
+      console.error('Error loading leaderboard:', err);
+      document.getElementById('rows').innerHTML = `<div class="error">❌ Error loading leaderboard.json<br><small>${err.message}</small><br><br><strong>Make sure leaderboard.json is in the root folder of your repo!</strong></div>`;
+    }
+  }
 
-let players = [];
-let currentMode = "overall";
+  function renderTabs(kits) {
+    const tabs = document.getElementById('kitTabs');
+    tabs.innerHTML = kits.map(k => `<div class="kit-tab ${k===activeKit?'active':''}" onclick="setKit('${k}')">${k.charAt(0).toUpperCase()+k.slice(1)}</div>`).join('');
+  }
 
-fetch("leaderboard.json")
-  .then(r => r.json())
-  .then(data => {
-    players = data;
-    setupTabs();
-    render();
-  });
+  function setKit(kit) {
+    activeKit = kit;
+    document.querySelectorAll('.kit-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === kit));
+    renderRows();
+  }
 
-function setupTabs() {
-  const tabs = document.getElementById("tabs");
-  const modes = ["overall", ...Object.keys(players[0].kits)];
+  function renderRows() {
+    if (!data) return;
+    
+    const players = data.leaderboard
+      .filter(p => p.kits[activeKit])
+      .sort((a,b) => b.kits[activeKit].elo - a.kits[activeKit].elo);
 
-  modes.forEach(mode => {
-    const tab = document.createElement("div");
-    tab.className = "tab" + (mode === "overall" ? " active" : "");
-    tab.textContent = mode.toUpperCase();
-    tab.onclick = () => {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      currentMode = mode;
-      render();
-    };
-    tabs.appendChild(tab);
-  });
-}
+    const rowClass = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const rankClass = i => i===0?'r1':i===1?'r2':i===2?'r3':'rn';
 
-function render() {
-  const tbody = document.querySelector("#board tbody");
-  tbody.innerHTML = "";
+    document.getElementById('rows').innerHTML = players.map((p,i) => {
+      const kit = p.kits[activeKit];
+      const winPct = kit.wins + kit.losses > 0 ? ((kit.wins/(kit.wins+kit.losses))*100).toFixed(1) : '0.0';
+      const initials = p.username.slice(0,2).toUpperCase();
+      return `<div class="lb-row ${rowClass(i)}">
+        <div class="rank ${rankClass(i)}">${i+1}</div>
+        <div class="player">
+          <div class="avatar">${initials}</div>
+          <div class="player-name">${p.username}${p.verified?'<span class="verified"></span>':''}</div>
+        </div>
+        <div class="elo">${kit.elo}</div>
+        <div class="stat">${kit.wins} / ${kit.losses}</div>
+        <div class="wl">${winPct}%</div>
+        <div class="streak">${kit.winstreak} WS</div>
+      </div>`;
+    }).join('');
+  }
 
-  const sorted = [...players].sort((a, b) => {
-    const aElo = currentMode === "overall" ? a.overall : a.kits[currentMode];
-    const bElo = currentMode === "overall" ? b.overall : b.kits[currentMode];
-    return bElo - aElo;
-  });
-
-  sorted.forEach((p, i) => {
-    const elo = currentMode === "overall" ? p.overall : p.kits[currentMode];
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="rank">${i + 1}</td>
-      <td>
-        ${p.username}<br>
-        <span class="tier">${getTier(elo)}</span>
-      </td>
-      <td class="elo">${elo}</td>
-      <td>${p.wins}</td>
-      <td>${p.losses}</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
+  loadData();
+  // Auto-refresh every 10 seconds
+  setInterval(loadData, 10000);
 </script>
-
 </body>
 </html>
